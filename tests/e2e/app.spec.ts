@@ -150,3 +150,17 @@ test('while playing, the keyboard follows the sounding chord and loops', async (
   expect(seen.join('')).toBe('CGC');
   await page.getByTestId('play').click();
 });
+
+test('clicking a Chord button sounds the chord while stopped', async ({ page }) => {
+  await page.addInitScript(FAKE_MIDI_INIT_SCRIPT);
+  await openApp(page);
+  await page.getByTestId('output-select').selectOption('midi');
+  await page.getByTestId('midi-connect').click();
+  await expect(page.getByTestId('midi-port')).toHaveValue('fake-out');
+  await page.getByTestId('degree-4').click(); // V in C major: G B D
+  await page.waitForFunction(() => {
+    const on = (window as any).__midiSent.filter((m: any) => m.bytes[0] === 0x90).map((m: any) => m.bytes[1]);
+    return [55, 59, 62].every((n) => on.includes(n));
+  });
+  await expect(page.getByTestId('play')).toHaveText('Play');
+});

@@ -9,8 +9,10 @@ vi.mock('../../src/state/player', () => ({
   connectMidi: vi.fn(async () => {}),
   startPlayback: vi.fn(),
   stopPlayback: vi.fn(),
+  previewChord: vi.fn(),
 }));
 
+import { previewChord } from '../../src/state/player';
 import * as store from '../../src/state/store';
 import { Lesson } from '../../src/ui/Lesson';
 import { Sidebar } from '../../src/ui/Sidebar';
@@ -70,6 +72,15 @@ describe('Sidebar', () => {
     render(<Sidebar />, host);
     $('degree-4').click();
     expect(store.previewDegree.value).toBe(4);
+    expect(previewChord).toHaveBeenLastCalledWith([55, 59, 62]); // G major triad
+  });
+
+  it('changing the Chord type re-sounds the previewed step', async () => {
+    render(<Sidebar />, host);
+    $('degree-0').click();
+    $('chord-type-seventh').click();
+    expect(previewChord).toHaveBeenLastCalledWith([48, 52, 55, 59]);
+    store.chordType.value = 'triad';
   });
 
   it('focusin and mouseenter on a section change the lesson topic', async () => {

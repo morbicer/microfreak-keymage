@@ -210,3 +210,55 @@ describe('connectMidi', () => {
     expect(d.player.midiStatus.value).toBe('denied');
   });
 });
+
+describe('previewChord', () => {
+  function withSink() {
+    const t = setup();
+    const events: string[] = [];
+    // setup's voice is a no-op, so spy through a fresh player with a recording voice.
+    const player = createPlayer({
+      createContext: () => ({ currentTime: 1, state: 'running', resume: async () => {} }),
+      createVoice: () => ({
+        noteOn: (m, w) => void events.push(`on ${m} @${w.toFixed(2)}`),
+        noteOff: (m, w) => void events.push(`off ${m} @${w.toFixed(2)}`),
+        allOff: () => void events.push('allOff'),
+        setVolume() {},
+      }),
+      scheduler: { start() {}, stop() {}, onBeat: () => () => {} },
+      requestMidi: async () => t.access,
+      nowMs: () => 5000,
+      setTimer: () => 0,
+      clearTimer: () => {},
+    });
+    return { player, events };
+  }
+
+  it('sounds each note for one beat at the current tempo', () => {
+    const { player, events } = withSink();
+    store.tempo.value = 120; // one beat = 0.5 s
+    player.previewChord([48, 52, 55]);
+    expect(events).toEqual([
+      'allOff',
+      'on 48 @1.02', 'off 48 @1.52',
+      'on 52 @1.02', 'off 52 @1.52',
+      'on 55 @1.02', 'off 55 @1.52',
+    ]);
+  });
+
+  it('does nothing while a run is playing, or for an empty chord', () => {
+    const { player, events } = withSink();
+    store.playing.value = true;
+    player.previewChord([48, 52]);
+    store.playing.value = false;
+    player.previewChord([]);
+    expect(events).toEqual([]);
+  });
+
+  it('reports a missing MIDI port instead of playing', () => {
+    const { player, events } = withSink();
+    store.output.value = 'midi';
+    player.previewChord([48, 52]);
+    expect(player.playError.value).toMatch(/No MIDI output/);
+    expect(events).toEqual([]);
+  });
+});

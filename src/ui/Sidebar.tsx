@@ -1,6 +1,7 @@
 import {
   chooseDegree,
   chordType,
+  currentChord,
   defaultLength,
   generateProgression,
   genEnding,
@@ -24,7 +25,7 @@ import {
   tempo,
   volume,
 } from '../state/store';
-import { connectMidi, midiPorts, midiStatus, startPlayback, stopPlayback } from '../state/player';
+import { connectMidi, midiPorts, midiStatus, previewChord, startPlayback, stopPlayback } from '../state/player';
 import { numeral } from '../theory/chords';
 import { noteName, sharpName } from '../theory/names';
 import { PRESETS } from '../theory/presets';
@@ -90,6 +91,12 @@ function Scales() {
   );
 }
 
+/** Sounds the chord on the Keyboard view, so the Chord buttons can be heard as well as seen. */
+function previewCurrent(): void {
+  const chord = currentChord.value;
+  if (chord) previewChord(chord.midi);
+}
+
 function ChordSection() {
   const degrees = hasDegrees.value;
   return (
@@ -105,7 +112,10 @@ function ChordSection() {
                   type="button"
                   data-testid={`degree-${d}`}
                   aria-pressed={previewDegree.value === d}
-                  onClick={() => chooseDegree(d)}
+                  onClick={() => {
+                    chooseDegree(d);
+                    previewCurrent();
+                  }}
                 >
                   <span>{numeral(scale.value, d, chordType.value)}</span>
                   <small>{noteName(scale.value, root.value, pc)}</small>
@@ -119,7 +129,10 @@ function ChordSection() {
                   type="button"
                   data-testid={`chord-type-${t.id}`}
                   aria-pressed={chordType.value === t.id}
-                  onClick={() => (chordType.value = t.id)}
+                  onClick={() => {
+                    chordType.value = t.id;
+                    if (previewDegree.value !== null) previewCurrent();
+                  }}
                 >
                   {t.label}
                 </button>

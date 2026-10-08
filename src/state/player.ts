@@ -14,6 +14,7 @@ import { createScheduler } from '../audio/scheduler';
 import type { PlayEvent, Scheduler, Sink } from '../audio/scheduler';
 import { createVoice } from '../audio/voice';
 import type { Voice } from '../audio/voice';
+import type { Midi } from '../theory/types';
 import { allNotesOff, listPorts, onPortsChanged, requestAccess } from '../midi';
 import type { MidiAccessLike, MidiOutputLike, MidiPortInfo } from '../midi';
 import { loop, midiPortId, output, playheadBeat, playing, progression, root, scale, slotChords, tempo, totalBeats, volume } from './store';
@@ -47,6 +48,8 @@ export interface Player {
   connectMidi(): Promise<void>;
   startPlayback(): void;
   stopPlayback(): void;
+  /** Sound one chord for a beat, so the learner can hear it. Does nothing while a run is playing. */
+  previewChord(midi: Midi[]): void;
 }
 
 const MIDI_CHANNEL = 0; // MIDI ch 1
@@ -119,6 +122,38 @@ export function createPlayer(deps: PlayerDeps): Player {
     activePort = null;
   }
 
+  /** The sink for the current output, plus the MIDI port it uses. Sets playError when MIDI has no port. */
+  function pickSink(audio: AudioContextLike, v: Voice): { sink: Sink; port: MidiOutputLike | null } | null {
+    if (output.value !== 'midi') return { sink: voiceSink(v), port: null };
+    const port = findPort(midiPortId.value);
+    if (!port) {
+      playError.value = 'No MIDI output selected. Connect MIDI and pick a port, or switch to the built-in sound.';
+      return null;
+    }
+    return { sink: midiSink(() => port, MIDI_CHANNEL, () => deps.nowMs() - audio.currentTime * 1000), port };
+  }
+
+  function previewChord(notes: Midi[]): void {
+    if (playing.value || notes.length === 0) return;
+    if (!ctx) ctx = deps.createContext();
+    if (ctx.state === 'suspended') void ctx.resume();
+    if (!voice) {
+      voice = deps.createVoice(ctx);
+      voice.setVolume(volume.value);
+    }
+    const picked = pickSink(ctx, voice);
+    if (!picked) return;
+    playError.value = null;
+    // A new preview replaces the previous one instead of stacking on it.
+    voice.allOff();
+    const on = ctx.currentTime + 0.02;
+    const off = on + 60 / tempo.value;
+    for (const n of notes) {
+      picked.sink.noteOn(n, on);
+      picked.sink.noteOff(n, off);
+    }
+  }
+
   function begin(): boolean {
     const events = buildEvents();
     if (events.length === 0) return false;
@@ -131,18 +166,10 @@ export function createPlayer(deps: PlayerDeps): Player {
       voice.setVolume(volume.value);
     }
 
-    const sinks: Sink[] = [];
-    if (output.value === 'midi') {
-      const port = findPort(midiPortId.value);
-      if (!port) {
-        playError.value = 'No MIDI output selected. Connect MIDI and pick a port, or switch to the built-in sound.';
-        return false;
-      }
-      activePort = port;
-      sinks.push(midiSink(() => port, MIDI_CHANNEL, () => deps.nowMs() - audio.currentTime * 1000));
-    } else {
-      sinks.push(voiceSink(voice));
-    }
+    const picked = pickSink(audio, voice);
+    if (!picked) return false;
+    const sinks: Sink[] = [picked.sink];
+    activePort = picked.port;
     playError.value = null;
 
     const bpm = tempo.value;
@@ -203,7 +230,7 @@ export function createPlayer(deps: PlayerDeps): Player {
     voice?.setVolume(v);
   });
 
-  return { midiPorts, midiStatus, playError, midiAccess, connectMidi, startPlayback, stopPlayback };
+  return { midiPorts, midiStatus, playError, midiAccess, connectMidi, startPlayback, stopPlayback, previewChord };
 }
 
 let shared: AudioContextLike | null = null;
@@ -233,3 +260,4 @@ export const getMidiAccess = (): MidiAccessLike | null => player.midiAccess.valu
 export const connectMidi = player.connectMidi;
 export const startPlayback = player.startPlayback;
 export const stopPlayback = player.stopPlayback;
+export const previewChord = player.previewChord;
