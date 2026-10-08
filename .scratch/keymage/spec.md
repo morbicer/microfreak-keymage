@@ -6,7 +6,7 @@ Foundation already in place (do not rewrite): `src/theory/types.ts`, `src/theory
 
 ## Gate for every task
 
-`npm run typecheck && npm test && npm run build` pass. New logic has Vitest tests in `tests/unit/`. UI work has a Playwright spec in `tests/e2e/` against the built `dist/index.html` over `file://`. Only `src/theory/` imports tonal. Only `src/ui/` imports preact (`@preact/signals` is allowed in `src/state/`). No network requests. System fonts only.
+`npm run typecheck && npm test && npm run build` pass. New logic has Vitest tests in `tests/unit/`. UI work has a Playwright spec in `tests/e2e/` against the built `dist/index.html` over `file://`. tonal was dropped (its npm package has missing entry files); theory is hand-rolled. Only `src/ui/` imports preact (`@preact/signals` is allowed in `src/state/`). No network requests. System fonts only.
 
 ## Decisions made while writing this spec
 
