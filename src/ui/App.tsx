@@ -2,6 +2,7 @@ import { ChordReadout } from './ChordReadout';
 import { Clip } from './Clip';
 import { Keyboard } from './Keyboard';
 import { Lesson } from './Lesson';
+import { ScaleCard } from './ScaleCard';
 import { Sidebar } from './Sidebar';
 import { ChordHeader, Strip } from './Strip';
 import { Topic } from './Topic';
@@ -13,6 +14,9 @@ export function App() {
       <main class="main">
         <ChordHeader />
         <ChordReadout />
+        <Topic topic="scale" class="block">
+          <ScaleCard />
+        </Topic>
         <Topic topic="keyboard" class="block">
           <Keyboard />
         </Topic>
