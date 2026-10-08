@@ -34,10 +34,14 @@ Decisions taken while charting:
 - [MicroFreak quantization and MIDI behavior](issues/01-microfreak-quantization-and-midi.md): snap down for 1-semitone gaps, wide gaps unknown, standard Minor/Harmonic minor sets, Scale/Root not settable by CC (only undocumented SysEx), out on ch 1. Hardware check follows.
 - [npm libraries](issues/03-npm-libraries.md): leaning tonal + raw Web Audio + raw Web MIDI + Preact + Vite singlefile, with Vitest/Playwright. Web MIDI works from file:// with a prompt.
 - [Music theory for beginners](issues/02-music-theory-for-beginners.md): theory doc written, with Degree chord tables, 16 progressions and heuristic transition weights. Pentatonic is major. Blues 7ths clash with Quantization.
+- [Tech stack, file structure and test strategy](issues/04-tech-stack-file-structure-tests.md): Preact + TS + Vite singlefile, tonal, raw Web Audio/MIDI. theory/audio/midi/state/ui split, CSS tokens. typecheck+test+build gate, Playwright on file://. Saw+LPF voice, C3–C5, root position.
+- [Random progression rules](issues/05-random-progression-rules.md): 7-note scales only, heuristic weights, Length 4/8, Ending finished/loops, triads/7ths. Chords tagged Home/Building/Tension with a reason per transition.
+- [Preset chords and progressions](issues/06-preset-chords-and-progressions.md): Degree buttons + Triad/7th/sus2/sus4 toggle, 14 progression presets (12-bar blues as triads). Scale change re-derives by degree, or freezes for Pentatonic/Blues/Off.
+- [Layout and explanation layering](issues/07-layout-and-explanation-layering.md): Variant B. Controls in a left sidebar, keyboard → strip → clip → Lesson panel in main. The Lesson panel follows hover/focus. Prototype on branch `prototype/layout`.
 
 ## Not yet specified
 
-- **Explanation copy.** What each caption and explain panel actually says, and how deep it goes. This depends on the theory research and the layout prototype.
+- **Explanation copy.** The final wording for each Lesson panel topic. The prototype's `EX` table is the draft. Settle it inside the spec.
 - **Clip view details.** How the Clip view marks chord boundaries and names (degree numeral, chord name), and whether it shows Snapped keys differently.
 - **Chord recognition rules.** How inversions, ambiguous note sets (C6 vs Am7) and 2-note intervals get named.
 
@@ -50,3 +54,6 @@ Decisions taken while charting:
 - Scales the MicroFreak doesn't have (Lydian, Phrygian, Locrian, melodic minor…).
 - Chords of more than 4 notes.
 - A root + quality chord picker.
+- Chord inversions and voice leading. Chords play in root position.
+- Locking chords or re-rolling single slots in the generator.
+- Minor blues and Andalusian cadence presets (they need notes from two scales).

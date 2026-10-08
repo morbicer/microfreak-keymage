@@ -39,6 +39,14 @@ _Avoid_: Custom chord
 **Chord recognition**:
 Naming the Chord formed by whichever keys are held, whether they were clicked or arrived over MIDI in.
 
+**Chord type**:
+The shape a Degree chord is built in: Triad, 7th, sus2 or sus4, all taken from scale steps.
+_Avoid_: Chord quality (that's major/minor/diminished, a result rather than a choice)
+
+**Chord function**:
+The job a chord does in a Progression: Home (tonic), Building (predominant) or Tension (dominant).
+_Avoid_: Role, harmonic function (fine in explanations)
+
 **Progression**:
 An ordered sequence of Chords, each held for its own Chord length.
 _Avoid_: Sequence (that's the MicroFreak's step sequencer), pattern
