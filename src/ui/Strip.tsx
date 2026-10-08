@@ -10,6 +10,7 @@ import {
   root,
   scale,
   scaleChangeNote,
+  activeSlot,
   selectedSlot,
   selectSlot,
   slotChords,
@@ -50,7 +51,7 @@ export function Strip() {
         {slots.length === 0 && <span class="strip-empty">Empty. Pick a chord, then press add.</span>}
         {slots.map((slot, i) => {
           const chord = chords[i];
-          const selected = selectedSlot.value === i;
+          const selected = activeSlot.value === i;
           const label = chord ? chordName(chord, scale.value, root.value) : '?';
           return (
             <div class="slot-wrap" role="listitem" key={i}>

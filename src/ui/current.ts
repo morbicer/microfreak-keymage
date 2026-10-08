@@ -5,13 +5,13 @@ import {
   heldKeys,
   previewDegree,
   progression,
-  selectedSlot,
+  activeSlot,
 } from '../state/store';
 import type { SlotSource } from '../theory/types';
 
 /** The source behind store.currentChord (same priority order). */
 export const currentSource = computed<SlotSource | null>(() => {
-  const sel = selectedSlot.value;
+  const sel = activeSlot.value;
   const slot = sel !== null ? progression.value[sel] : undefined;
   if (slot) return slot.source;
   if (heldKeys.value.length > 0) return { kind: 'free', midi: heldKeys.value };

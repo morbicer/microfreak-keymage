@@ -256,3 +256,21 @@ describe('slot cap', () => {
     expect(s.progression.value).toHaveLength(s.MAX_SLOTS);
   });
 });
+
+describe('playingSlot', () => {
+  it('follows the playhead while playing and overrides the selection', () => {
+    s.progression.value = [deg(0, 4), deg(4, 2), deg(3, 8)];
+    s.selectedSlot.value = 0;
+    expect(s.playingSlot.value).toBeNull();
+    s.playing.value = true;
+    s.playheadBeat.value = 0;
+    expect(s.playingSlot.value).toBe(0);
+    s.playheadBeat.value = 5;
+    expect(s.playingSlot.value).toBe(1);
+    expect(s.currentChord.value).toEqual(s.slotChords.value[1]);
+    s.playheadBeat.value = 6; // loop wrapped values still index into the third slot
+    expect(s.playingSlot.value).toBe(2);
+    s.playing.value = false;
+    expect(s.currentChord.value).toEqual(s.slotChords.value[0]);
+  });
+});

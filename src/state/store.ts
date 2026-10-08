@@ -57,9 +57,24 @@ export const slotChords = computed<Chord[]>(() =>
 
 export const totalBeats = computed(() => progression.value.reduce((n, s) => n + s.length, 0));
 
-/** What the Keyboard view highlights: the selected slot, else the held keys, else a degree preview. */
+/** Index of the slot sounding at the playhead while playing, else null. */
+export const playingSlot = computed<number | null>(() => {
+  if (!playing.value) return null;
+  let start = 0;
+  const beat = playheadBeat.value;
+  for (let i = 0; i < progression.value.length; i++) {
+    start += progression.value[i]!.length;
+    if (beat < start) return i;
+  }
+  return null;
+});
+
+/** The slot the views follow: the one playing, else the selected one. */
+export const activeSlot = computed<number | null>(() => playingSlot.value ?? selectedSlot.value);
+
+/** What the Keyboard view highlights: the playing or selected slot, else the held keys, else a degree preview. */
 export const currentChord = computed<Chord | null>(() => {
-  const sel = selectedSlot.value;
+  const sel = activeSlot.value;
   if (sel !== null && slotChords.value[sel]) return slotChords.value[sel]!;
   if (heldKeys.value.length > 0) return resolveChord({ kind: 'free', midi: heldKeys.value }, scale.value, root.value);
   const d = previewDegree.value;

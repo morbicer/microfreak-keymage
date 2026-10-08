@@ -1,4 +1,4 @@
-import { playheadBeat, playing, progression, selectedSlot, selectSlot, slotChords, lessonTopic, root, scale, totalBeats } from '../state/store';
+import { activeSlot, playheadBeat, playing, progression, selectedSlot, selectSlot, slotChords, lessonTopic, root, scale, totalBeats } from '../state/store';
 import { chordName, numeral } from '../theory/chords';
 import { isSnapped, snapMidi } from '../theory/scales';
 import '../styles/clip.css';
@@ -15,7 +15,7 @@ export function Clip() {
   const rt = root.value;
   const slots = progression.value;
   const chords = slotChords.value;
-  const sel = selectedSlot.value;
+  const sel = activeSlot.value;
   const beats = totalBeats.value;
 
   const topic = {

@@ -133,3 +133,20 @@ test('Built-in voice play toggles the playing state without errors', async ({ pa
   await expect(page.getByTestId('play')).toHaveText('Play');
   expect(errors).toEqual([]);
 });
+
+test('while playing, the keyboard follows the sounding chord and loops', async ({ page }) => {
+  await openApp(page, '#s=major&r=0&bpm=160&loop=1&p=d0.triad.1,d4.triad.1');
+  await page.getByTestId('play').click();
+  // C chord root is key-48, G chord root is key-55. Seeing C, then G, then C again proves the loop.
+  const seen: string[] = [];
+  const deadline = Date.now() + 4000;
+  while (Date.now() < deadline && seen.join('') !== 'CGC') {
+    const c = (await state(page, 'key-48')).split(' ').includes('root');
+    const g = (await state(page, 'key-55')).split(' ').includes('root');
+    const now = c ? 'C' : g ? 'G' : '';
+    if (now && seen[seen.length - 1] !== now) seen.push(now);
+    await page.waitForTimeout(40);
+  }
+  expect(seen.join('')).toBe('CGC');
+  await page.getByTestId('play').click();
+});
