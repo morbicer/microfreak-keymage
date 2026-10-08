@@ -11,7 +11,6 @@ import {
   scale,
   scaleChangeNote,
   activeSlot,
-  selectedSlot,
   selectSlot,
   slotChords,
 } from '../state/store';
