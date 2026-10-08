@@ -15,6 +15,12 @@ const BLACK_PCS = new Set([1, 3, 6, 8, 10]);
 
 const isBlack = (midi: Midi) => BLACK_PCS.has(midi % 12);
 
+/** Splits "Bb (A#)" into its theory name and the MicroFreak's sharp name. */
+function splitName(name: string): { main: string; alt?: string } {
+  const m = /^(\S+) \((\S+)\)$/.exec(name);
+  return m ? { main: m[1]!, alt: m[2]! } : { main: name };
+}
+
 const MIDIS: Midi[] = Array.from({ length: LAST - FIRST + 1 }, (_, i) => FIRST + i);
 const WHITES = MIDIS.filter((m) => !isBlack(m));
 const WIDTH = WHITES.length * WHITE_W;
@@ -86,16 +92,23 @@ export function Keyboard() {
         {snapped ? (
           <>
             <text class="key-label snap" x={cx} y={black ? h - 28 : h - 34}>
-              {`→ ${playedName}`}
+              {`→ ${splitName(playedName).main}`}
             </text>
             <text class="key-hint" x={cx} y={black ? h - 14 : h - 18}>
               {`(${own})`}
             </text>
           </>
         ) : (
-          <text class="key-label" x={cx} y={black ? h - 20 : h - 18}>
-            {own}
-          </text>
+          <>
+            <text class="key-label" x={cx} y={black ? h - 26 : h - 28}>
+              {splitName(own).main}
+            </text>
+            {splitName(own).alt && (
+              <text class="key-hint" x={cx} y={black ? h - 14 : h - 16}>
+                {`(${splitName(own).alt})`}
+              </text>
+            )}
+          </>
         )}
         {scaleRoot && (
           <rect class="key-tick" data-testid={`tick-${midi}`} x={cx - 8} y={h - 8} width={16} height={4} rx={1} />
