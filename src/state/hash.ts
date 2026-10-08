@@ -1,5 +1,5 @@
 import { batch, effect } from '@preact/signals';
-import { SCALE_IDS } from '../theory/scales';
+import { SCALES, SCALE_IDS } from '../theory/scales';
 import type { ChordLength, ChordType, OutputKind, ProgressionSlot, ScaleId } from '../theory/types';
 import {
   chordType,
@@ -7,16 +7,20 @@ import {
   genEnding,
   genLength,
   genType,
+  heldKeys,
+  loadedPresetId,
   loop,
+  MAX_SLOTS,
   output,
+  previewDegree,
   progression,
   root,
   scale,
+  scaleChangeNote,
   selectedSlot,
   tempo,
 } from './store';
 
-const MAX_SLOTS = 16;
 const MAX_FREE_NOTES = 4;
 const LENGTHS: readonly ChordLength[] = [1, 2, 4, 8, 16];
 const CHORD_TYPES: readonly ChordType[] = ['triad', 'seventh', 'sus2', 'sus4'];
@@ -103,13 +107,15 @@ export function decodeState(hash: string): void {
   } catch {
     p = new URLSearchParams();
   }
+  const nextScale = oneOf(p.get('s'), SCALE_IDS) ?? DEFAULTS.scale;
   const slots: ProgressionSlot[] = [];
   for (const text of (p.get('p') ?? '').split(',').slice(0, MAX_SLOTS)) {
     const slot = decodeSlot(text);
-    if (slot) slots.push(slot);
+    // Degree slots make no sense in a scale without Degree chords, and would throw on render.
+    if (slot && (slot.source.kind === 'free' || SCALES[nextScale].hasDegrees)) slots.push(slot);
   }
   batch(() => {
-    scale.value = oneOf(p.get('s'), SCALE_IDS) ?? DEFAULTS.scale;
+    scale.value = nextScale;
     root.value = int(p.get('r'), 0, 11) ?? DEFAULTS.root;
     chordType.value = oneOf(p.get('t'), CHORD_TYPES) ?? DEFAULTS.chordType;
     tempo.value = int(p.get('bpm'), 60, 160) ?? DEFAULTS.tempo;
@@ -121,6 +127,10 @@ export function decodeState(hash: string): void {
     genEnding.value = oneOf(p.get('ge'), ['finished', 'loops'] as const) ?? DEFAULTS.genEnding;
     genType.value = oneOf(p.get('gt'), ['triad', 'seventh'] as const) ?? DEFAULTS.genType;
     progression.value = slots;
+    heldKeys.value = [];
+    previewDegree.value = null;
+    loadedPresetId.value = null;
+    scaleChangeNote.value = null;
     const sel = selectedSlot.value;
     if (sel !== null && sel >= slots.length) selectedSlot.value = null;
   });

@@ -247,3 +247,12 @@ describe('totalBeats', () => {
     expect(s.totalBeats.value).toBe(21);
   });
 });
+
+describe('slot cap', () => {
+  it('refuses to add past MAX_SLOTS', () => {
+    s.progression.value = Array.from({ length: s.MAX_SLOTS }, () => deg(0));
+    s.chooseDegree(1);
+    s.addSlot();
+    expect(s.progression.value).toHaveLength(s.MAX_SLOTS);
+  });
+});

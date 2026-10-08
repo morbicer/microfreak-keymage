@@ -112,6 +112,16 @@ describe('voice', () => {
     expect(oscs.every((o) => o.stopped > 1)).toBe(true);
   });
 
+  it('allOff cuts a note whose release the scheduler already queued', () => {
+    const { ctx, oscs } = fakeCtx();
+    const v = createVoice(ctx);
+    v.noteOn(60, 0);
+    v.noteOff(60, 20); // queued release at the chord's end, 19 s away
+    expect(oscs[0].stopped).toBeGreaterThan(20);
+    v.allOff();
+    expect(oscs[0].stopped).toBeLessThan(2);
+  });
+
   it('setVolume drives the master gain and clamps to 0-1', () => {
     const { ctx, log } = fakeCtx();
     const v = createVoice(ctx);

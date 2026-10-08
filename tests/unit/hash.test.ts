@@ -195,3 +195,20 @@ describe('startHashSync', () => {
     stop();
   });
 });
+
+describe('decodeState safety', () => {
+  it('drops degree slots under a scale without Degree chords', () => {
+    decodeState('#s=pentatonic&p=d0.triad.4,f48-52-55.2');
+    expect(store.progression.value).toHaveLength(1);
+    expect(store.progression.value[0]!.source.kind).toBe('free');
+    expect(() => store.slotChords.value).not.toThrow();
+  });
+
+  it('clears stale transient state', () => {
+    store.loadedPresetId.value = 'pop';
+    store.heldKeys.value = [60, 64];
+    decodeState('#s=major&p=d0.triad.4');
+    expect(store.loadedPresetId.value).toBeNull();
+    expect(store.heldKeys.value).toEqual([]);
+  });
+});

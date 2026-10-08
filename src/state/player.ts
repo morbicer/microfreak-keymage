@@ -7,7 +7,7 @@
  *
  * Every browser API lives behind `createPlayer`'s deps or inside a function, so the module imports in node.
  */
-import { effect, signal } from '@preact/signals';
+import { effect, signal, untracked } from '@preact/signals';
 import type { Signal } from '@preact/signals';
 import { voiceSink, midiSink } from '../audio/sinks';
 import { createScheduler } from '../audio/scheduler';
@@ -88,9 +88,12 @@ export function createPlayer(deps: PlayerDeps): Player {
       midiStatus.value = /not supported/i.test(msg) ? 'unsupported' : 'denied';
       return;
     }
-    unwatchPorts?.();
-    unwatchPorts = onPortsChanged(access, refreshPorts);
-    midiAccess.value = access;
+    // A repeat Connect returns the same access object. Re-watching would wipe MIDI in's chained handler.
+    if (midiAccess.value !== access) {
+      unwatchPorts?.();
+      unwatchPorts = onPortsChanged(access, refreshPorts);
+      midiAccess.value = access;
+    }
     midiStatus.value = 'ready';
     refreshPorts();
   }
@@ -180,10 +183,10 @@ export function createPlayer(deps: PlayerDeps): Player {
         first = false;
         return;
       }
-      halt();
-      if (!begin()) {
-        playing.value = false;
-      }
+      untracked(() => {
+        halt();
+        if (!begin()) playing.value = false;
+      });
     });
   }
 

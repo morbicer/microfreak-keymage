@@ -15,6 +15,7 @@ import type {
 } from '../theory/types';
 
 export const MAX_CHORD_NOTES = 4;
+export const MAX_SLOTS = 16;
 
 export const scale = signal<ScaleId>('major');
 export const root = signal<PitchClass>(0);
@@ -120,7 +121,7 @@ export function addSlot(): void {
   else if (previewDegree.value !== null && hasDegrees.value) {
     source = { kind: 'degree', degree: previewDegree.value, type: chordType.value };
   }
-  if (!source) return;
+  if (!source || progression.value.length >= MAX_SLOTS) return;
   touch();
   progression.value = [...progression.value, { source, length: defaultLength.value }];
   selectedSlot.value = progression.value.length - 1;

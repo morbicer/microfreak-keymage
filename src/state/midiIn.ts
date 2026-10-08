@@ -34,6 +34,7 @@ export function startMidiIn(access: MidiAccessLike): () => void {
   let unNote: (() => void) | null = null;
   const subscribe = () => {
     unNote?.();
+    heldInput.value = []; // a released key's note-off may never arrive after a port change
     unNote = onNote(access, (e) => {
       const rest = heldInput.value.filter((m) => m !== e.note);
       heldInput.value = e.on ? [...rest, e.note].slice(-MAX_HELD) : rest;

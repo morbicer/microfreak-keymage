@@ -78,7 +78,15 @@ export function createVoice(ctx: AudioContext): Voice {
 
   function allOff(): void {
     const now = ctx.currentTime;
-    for (const note of all) release(note, now);
+    for (const note of all) {
+      if (!note.released) release(note, now);
+      else if (now > note.startAt) {
+        // The scheduler already queued a release at the chord's end; cut it short.
+        note.env.gain.cancelScheduledValues(now);
+        note.env.gain.setTargetAtTime(0, now, RELEASE_TAU);
+        note.osc.stop(now + RELEASE_STOP_SEC);
+      }
+    }
     active.clear();
   }
 
