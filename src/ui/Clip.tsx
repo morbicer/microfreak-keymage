@@ -58,7 +58,7 @@ export function Clip() {
     const fn = slot.fn ?? 'free';
     const select = () => selectSlot(i);
     return (
-      <g key={i} class={`slot fn-${fn}${sel === i ? ' selected' : ''}`}>
+      <g key={i} class={`slot fn-${fn}${sel === i ? ' selected' : ''}${w < 60 ? ' tight' : ''}`}>
         <rect class="slot-bg" x={x} y={LABEL_H} width={w} height={rows * ROW_H} />
         <line class="slot-line" x1={x} x2={x} y1={0} y2={height} />
         <g

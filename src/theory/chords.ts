@@ -2,7 +2,7 @@ import { SCALES, snapMidi } from './scales';
 import { spellName } from './names';
 import type { Chord, ChordType, Midi, PitchClass, ScaleId, SlotSource } from './types';
 
-const mod12 = (n: number): number => ((n % 12) + 12) % 12;
+export const mod12 = (n: number): number => ((n % 12) + 12) % 12;
 
 /** Scale steps stacked on the degree for each Chord type. */
 const STEPS: Record<ChordType, readonly number[]> = {
@@ -67,7 +67,7 @@ export function numeral(scale: ScaleId, degree: number, type: ChordType): string
 }
 
 /** Chord shapes as semitones above the root, with their name suffix. */
-const SHAPES: readonly { intervals: readonly number[]; suffix: string }[] = [
+export const SHAPES: readonly { intervals: readonly number[]; suffix: string }[] = [
   { intervals: [0, 4, 7], suffix: '' },
   { intervals: [0, 3, 7], suffix: 'm' },
   { intervals: [0, 3, 6], suffix: 'dim' },

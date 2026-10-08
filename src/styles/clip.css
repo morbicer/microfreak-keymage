@@ -49,3 +49,6 @@
 }
 
 .clip .playhead { stroke: var(--accent, #e8742a); stroke-width: 2; pointer-events: none; }
+
+/* 1-beat slots are 40px wide: shrink the label so it stays inside its box */
+.clip .slot.tight .slot-label text { font-size: 10px; }

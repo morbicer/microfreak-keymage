@@ -42,6 +42,8 @@ export interface Player {
   midiPorts: Signal<MidiPortInfo[]>;
   midiStatus: Signal<MidiStatus>;
   playError: Signal<string | null>;
+  /** The MidiAccess obtained by connectMidi, shared with MIDI in. */
+  midiAccess: Signal<MidiAccessLike | null>;
   connectMidi(): Promise<void>;
   startPlayback(): void;
   stopPlayback(): void;
@@ -53,6 +55,7 @@ export function createPlayer(deps: PlayerDeps): Player {
   const midiPorts = signal<MidiPortInfo[]>([]);
   const midiStatus = signal<MidiStatus>('idle');
   const playError = signal<string | null>(null);
+  const midiAccess = signal<MidiAccessLike | null>(null);
 
   let ctx: AudioContextLike | null = null;
   let voice: Voice | null = null;
@@ -87,6 +90,7 @@ export function createPlayer(deps: PlayerDeps): Player {
     }
     unwatchPorts?.();
     unwatchPorts = onPortsChanged(access, refreshPorts);
+    midiAccess.value = access;
     midiStatus.value = 'ready';
     refreshPorts();
   }
@@ -196,7 +200,7 @@ export function createPlayer(deps: PlayerDeps): Player {
     voice?.setVolume(v);
   });
 
-  return { midiPorts, midiStatus, playError, connectMidi, startPlayback, stopPlayback };
+  return { midiPorts, midiStatus, playError, midiAccess, connectMidi, startPlayback, stopPlayback };
 }
 
 let shared: AudioContextLike | null = null;
@@ -221,6 +225,8 @@ const player = createPlayer({
 export const midiPorts = player.midiPorts;
 export const midiStatus = player.midiStatus;
 export const playError = player.playError;
+export const midiAccess = player.midiAccess;
+export const getMidiAccess = (): MidiAccessLike | null => player.midiAccess.value;
 export const connectMidi = player.connectMidi;
 export const startPlayback = player.startPlayback;
 export const stopPlayback = player.stopPlayback;

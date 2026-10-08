@@ -149,3 +149,6 @@ vite.config.ts.timestamp-*
 .turbo
 
 .playwright-mcp/
+
+test-results/
+playwright-report/

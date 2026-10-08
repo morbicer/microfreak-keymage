@@ -1,3 +1,4 @@
+import { heldInput, foldToKeyboard } from '../state/midiIn';
 import { currentChord, heldKeys, lessonTopic, root, scale, toggleKey } from '../state/store';
 import { noteName } from '../theory/names';
 import { isSnapped, snapMidi } from '../theory/scales';
@@ -28,6 +29,7 @@ export function Keyboard() {
   const rt = root.value;
   const chord = currentChord.value;
   const held = heldKeys.value;
+  const midiIn = new Set(heldInput.value.map(foldToKeyboard));
   const chordRoot = chord?.midi[0];
 
   const renderKey = (midi: Midi) => {
@@ -47,6 +49,7 @@ export function Keyboard() {
       isChordRoot && 'root',
       scaleRoot && 'scale-root',
       pressed && 'pressed',
+      midiIn.has(midi) && 'midi-in',
     ]
       .filter(Boolean)
       .join(' ');
@@ -83,7 +86,7 @@ export function Keyboard() {
         {snapped ? (
           <>
             <text class="key-label snap" x={cx} y={black ? h - 28 : h - 34}>
-              {`plays ${playedName}`}
+              {`→ ${playedName}`}
             </text>
             <text class="key-hint" x={cx} y={black ? h - 14 : h - 18}>
               {`(${own})`}

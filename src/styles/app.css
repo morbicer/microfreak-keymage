@@ -79,8 +79,8 @@ input[type='checkbox'] { accent-color: var(--accent); }
 .chord-header .numeral { color: var(--accent); font-size: var(--font-lg); }
 .chord-header .hint { color: var(--muted); }
 
-.strip { display: flex; flex-wrap: wrap; align-items: stretch; gap: var(--space-2); }
-.slot-wrap { display: flex; align-items: center; gap: var(--space-2); }
+.strip { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-3) var(--space-2); }
+.slot-wrap { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-1); width: 150px; }
 .slot { position: relative; background: var(--panel-2); border: 1px solid var(--border); border-radius: var(--radius); display: flex; }
 .slot.selected { border-color: var(--accent); background: var(--accent-soft); }
 .slot .pick { border: 0; background: none; padding: var(--space-2) var(--space-3); padding-top: var(--space-3); text-align: left; }
@@ -91,7 +91,7 @@ input[type='checkbox'] { accent-color: var(--accent); }
 .slot .bar.building { background: var(--building); }
 .slot .bar.tension { background: var(--tension); }
 .slot .remove { border: 0; background: none; color: var(--muted); padding: var(--space-1) var(--space-2); }
-.reason { color: var(--muted); font-size: var(--font-sm); max-width: 160px; }
+.reason { color: var(--muted); font-size: var(--font-sm); line-height: 1.3;  order: 2; }
 .strip-empty { color: var(--muted); }
 
 .lesson { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-3) var(--space-4); }
@@ -103,3 +103,6 @@ input[type='checkbox'] { accent-color: var(--accent); }
   .app { flex-direction: column; }
   .sidebar { position: static; width: 100%; flex-basis: auto; height: auto; }
 }
+
+.slot .pick[aria-pressed='true'] { background: none; color: var(--text); }
+.strip + .note { margin-top: var(--space-3); }

@@ -37,6 +37,13 @@
   stroke-width: 3;
 }
 
+/* Notes held on MIDI in */
+.keyboard .key[data-state~="midi-in"] .key-body {
+  fill: var(--midi-in, #3aa0e8);
+  stroke: var(--midi-in, #3aa0e8);
+  stroke-width: 3;
+}
+
 /* Tick under the scale Root */
 .keyboard .key-tick { fill: var(--accent, #e8742a); pointer-events: none; }
 

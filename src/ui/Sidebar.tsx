@@ -215,7 +215,7 @@ function ProgressionSection() {
               value={slot?.length ?? ''}
               onChange={(e) => sel !== null && setSlotLength(sel, Number(e.currentTarget.value) as ChordLength)}
             >
-              {!slot && <option value="">No chord selected</option>}
+              {!slot && <option value="">None selected</option>}
               {LENGTHS.map((l) => (
                 <option key={l.value} value={l.value}>{l.label}</option>
               ))}

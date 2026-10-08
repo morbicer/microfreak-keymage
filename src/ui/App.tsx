@@ -1,3 +1,4 @@
+import { ChordReadout } from './ChordReadout';
 import { Clip } from './Clip';
 import { Keyboard } from './Keyboard';
 import { Lesson } from './Lesson';
@@ -11,6 +12,7 @@ export function App() {
       <Sidebar />
       <main class="main">
         <ChordHeader />
+        <ChordReadout />
         <Topic topic="keyboard" class="block">
           <Keyboard />
         </Topic>
