@@ -26,9 +26,9 @@ Honest summary of the search. The manual is the only first-party source with sca
 
 ### 1b. Gaps of 2 or more semitones (Pentatonic, Blues): where do F and F# go in C pentatonic?
 
-**Answer: unknown. Confidence: unknown.** No source describes multi-semitone gaps. The manual's pentatonic list is `C D E G A` (manual L6474).
+**Answer: always down to the nearest in-scale note, even across multi-semitone gaps. Confidence: confirmed by hardware test (see `.scratch/keymage/issues/09-hardware-quantization-check.md`).**
 
-Candidate rules and what each does in C pentatonic:
+Hardware test on C Pentatonic found the real scale to be `C Eb F G Bb` (see section 2 correction below), and the snap behavior confirmed "always down" over "nearest, ties down": pressing A (pc 9) produces G (pc 7, two semitones down) rather than the pitch-closer Bb (pc 10, one semitone up). The "nearest, ties down" rule would have predicted Bb here, and was ruled out.
 
 | Rule | F | F# | A# | B |
 |---|---|---|---|---|
@@ -36,13 +36,21 @@ Candidate rules and what each does in C pentatonic:
 | Always up | G | G | C | C |
 | Nearest, ties down | E | G | A | C |
 
-**Assumption for the app:** "always down", because it is the only rule with direct evidence (1a) and it is the simplest rule a firmware author would write (a lookup table of 12 entries per scale). Mark F, F#, A# and B snaps in pentatonic and blues as "best guess" in the data model (a `confidence: 'assumed'` flag on the snap map), so the UI can stay quiet about it but the code is honest.
+(This table used the manual's — incorrect — major pentatonic set `C D E G A`; see section 2 for the corrected set and full confirmed map.)
 
 ---
 
-## 2. Real note sets for Minor and Harmonic minor
+## 2. Real note sets for Minor, Harmonic minor, and Pentatonic
 
-**Answer: the manual lists are typos. Use the standard theory sets. Confidence: inferred (high), no first-party correction exists.**
+**Answer: the manual's Minor and Harmonic minor lists are typos; use the standard theory sets (confirmed by hardware test). The manual's Pentatonic list is also wrong — the real scale is minor pentatonic, not major pentatonic (confirmed by hardware test). Confidence: confirmed, see `.scratch/keymage/issues/09-hardware-quantization-check.md`.**
+
+Hardware test results:
+
+- **Minor**: E, A, B all snap down a semitone (E→Eb, A→Ab, B→Bb), confirming `C D Eb F G Ab Bb` and that white keys snap too, not just black ones.
+- **Harmonic minor**: B is unsnapped (in-scale), confirming `C D Eb F G Ab B` and that the manual's list (which has E instead of Eb) is a typo.
+- **Pentatonic**: the manual's `C D E G A` (major pentatonic) is wrong. The real scale is `C Eb F G Bb` (**minor** pentatonic). Full confirmed pitch-class map at Root C: C→C, C#→C, D→C, D#/Eb→Eb (in scale), E→Eb, F→F (in scale), F#→F, G→G (in scale), G#→G, A→G, A#/Bb→Bb (in scale), B→Bb.
+- **Blues**: still unresolved. Hardware readings for G and A were inconsistent with each other (see the issue file) — needs a retest with a reliable pitch reference (DAW recording, not ear/tuner-over-chat) before trusting a corrected table.
+- Root independence confirmed: Minor at Root D snaps F#→F, matching the "intelligent transpose" claim (manual L6519-6520).
 
 The manual's list (manual L6462-6472):
 
@@ -78,7 +86,7 @@ The "Harmonic minor has the manual's typo" note is worth a line in the app's tea
 
 ## 3. Are incoming MIDI notes quantized by the Scale setting?
 
-**Answer: probably yes, but not stated anywhere. Confidence: inferred (medium).**
+**Answer: yes. Confidence: confirmed by hardware test (`.scratch/keymage/issues/09-hardware-quantization-check.md`) — sending C# from a computer with Scale = C Major plays as C, same as pressing the key.**
 
 Evidence:
 
@@ -131,7 +139,7 @@ This is useful context but out of scope for the first version. Web MIDI SysEx al
 
 ## 5. Does the MicroFreak send MIDI out from its keys pre- or post-quantization?
 
-**Answer: unknown. Confidence: unknown, with a weak inference toward pre-quantization (raw key pitch).**
+**Answer: pre-quantization (raw key pitch). Confidence: confirmed by hardware test (`.scratch/keymage/issues/09-hardware-quantization-check.md`) — pressing C#3 with Scale = C Major sounds like C3, but the MIDI monitor shows the raw C#3 note number going out.**
 
 - Manual L6027-6040: Local Control Off means "all the panel controls and the keyboard are transmitted over MIDI, but they're disconnected from the MicroFreak". Merge setting defines how keyboard data merges into the MIDI stream. No sentence about scale.
 - Arp/Seq MIDI out: "The arpeggiator/sequencer can send MIDI notes to trigger other instruments" (manual L6040-6042). Again no mention of scale.
