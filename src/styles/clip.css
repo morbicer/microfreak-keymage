@@ -1,0 +1,51 @@
+.clip {
+  overflow-x: auto;
+  background: var(--panel, #101010);
+  border-radius: var(--radius, 8px);
+  color: var(--text, #ececec);
+}
+.clip svg { display: block; }
+.clip-empty {
+  margin: 0;
+  padding: var(--space-4, 16px);
+  color: var(--muted, #9a9a9a);
+  font-size: var(--font-md, 14px);
+}
+
+.clip .row { fill: transparent; stroke: var(--border, #2a2a2a); stroke-width: 0.5; }
+.clip .row.dark { fill: var(--panel-2, #1a1a1a); }
+.clip .slot-line { stroke: var(--border, #383838); stroke-width: 1; }
+
+.clip .slot-label { cursor: pointer; outline: none; }
+.clip .slot-label rect { fill: var(--panel-2, #282828); stroke: transparent; stroke-width: 2; }
+.clip .slot-label text {
+  fill: var(--text, #ececec);
+  font-size: var(--font-sm, 12px);
+  font-weight: 700;
+  pointer-events: none;
+}
+.clip .slot-label:hover rect { stroke: var(--accent, #e8742a); }
+.clip .slot-label:focus-visible rect { stroke: var(--text, #ececec); }
+.clip .slot.selected .slot-label rect { stroke: var(--accent, #e8742a); }
+.clip .slot.selected .slot-bg { fill: var(--accent-soft, #e8742a40); }
+.clip .slot-bg { fill: transparent; }
+
+.clip .note { fill: var(--muted, #9a9a9a); stroke: transparent; stroke-width: 1.5; }
+.clip .slot.fn-home .note { fill: var(--home, #4caf7d); }
+.clip .slot.fn-building .note { fill: var(--building, #e0b84a); }
+.clip .slot.fn-tension .note { fill: var(--tension, #e0574a); }
+.clip .slot.fn-home .slot-label rect { fill: var(--home, #4caf7d); }
+.clip .slot.fn-building .slot-label rect { fill: var(--building, #e0b84a); }
+.clip .slot.fn-tension .slot-label rect { fill: var(--tension, #e0574a); }
+.clip .slot.fn-home .slot-label text,
+.clip .slot.fn-building .slot-label text,
+.clip .slot.fn-tension .slot-label text { fill: #111; }
+
+/* Notes whose pressed key was Snapped: dashed outline */
+.clip .note.snapped {
+  stroke: var(--text, #ececec);
+  stroke-dasharray: 3 2;
+  fill-opacity: 0.55;
+}
+
+.clip .playhead { stroke: var(--accent, #e8742a); stroke-width: 2; pointer-events: none; }

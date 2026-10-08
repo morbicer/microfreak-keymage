@@ -1,0 +1,47 @@
+.keyboard {
+  width: 100%;
+  display: block;
+  background: var(--bg, #0c0c0c);
+  border-radius: var(--radius, 8px);
+  padding: var(--space-2, 8px);
+  box-sizing: border-box;
+}
+.keyboard .key { cursor: pointer; outline: none; }
+.keyboard .key-body { stroke: #111; stroke-width: 1; }
+.keyboard .white .key-body { fill: #e9ebee; }
+.keyboard .black .key-body { fill: #2b2b2b; }
+
+.keyboard .key-label {
+  font-size: var(--font-sm, 11px);
+  font-weight: 600;
+  text-anchor: middle;
+  pointer-events: none;
+}
+.keyboard .white .key-label, .keyboard .white .key-hint { fill: #222; }
+.keyboard .black .key-label, .keyboard .black .key-hint { fill: #eee; }
+.keyboard .black .key-label { font-size: 9px; }
+.keyboard .key-hint { font-size: 8px; text-anchor: middle; opacity: .7; pointer-events: none; }
+
+/* Snapped keys: greyed, italic labels */
+.keyboard .white[data-state~="snapped"] .key-body { fill: #c9ccd1; }
+.keyboard .black[data-state~="snapped"] .key-body { fill: #4a4a4a; }
+.keyboard .key-label.snap { font-style: italic; font-weight: 400; opacity: .6; }
+
+/* Chord tones: light orange, chord root solid orange */
+.keyboard .white[data-state~="chord"] .key-body { fill: #f6c19c; }
+.keyboard .black[data-state~="chord"] .key-body { fill: #b8561b; }
+.keyboard .key[data-state~="root"] .key-body { fill: var(--accent, #e8742a); }
+
+.keyboard .key[data-state~="pressed"] .key-body {
+  stroke: var(--accent, #e8742a);
+  stroke-width: 3;
+}
+
+/* Tick under the scale Root */
+.keyboard .key-tick { fill: var(--accent, #e8742a); pointer-events: none; }
+
+.keyboard .key:hover .key-body { stroke: var(--accent, #e8742a); }
+.keyboard .key:focus-visible .key-body {
+  stroke: var(--text, #ececec);
+  stroke-width: 3;
+}
